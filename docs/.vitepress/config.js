@@ -4,6 +4,7 @@ export default {
   title: "数据结构",
   description: 'Just playing around.',
   outDir: '../dist',
+  base: "/data_structure",
   head: [
     ['link', { rel: 'icon', href: '/favicon.ico' }]
   ],
