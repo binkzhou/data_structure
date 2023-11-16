@@ -10,7 +10,6 @@ export default {
   ],
   themeConfig: {
     nav: [
-
       { text: '首页', link: '/' },
     ],
 
@@ -22,6 +21,12 @@ export default {
           { text: '链式存储结构', link: '/linear/0002' },
           { text: '静态链表', link: '/linear/0003' },
           { text: '双向循环链表', link: '/linear/0004' },
+        ]
+      },
+      {
+        text: '栈和队列',
+        items: [
+          { text: '栈的顺序存储结构', link: '/stack/0001' },
         ]
       },
     ],
