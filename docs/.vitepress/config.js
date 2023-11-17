@@ -27,6 +27,7 @@ export default {
         text: '栈和队列',
         items: [
           { text: '栈的顺序存储结构', link: '/stack/0001' },
+          { text: '队列的链式存储结构', link: '/stack/0002' },
         ]
       },
     ],
