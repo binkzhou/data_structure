@@ -28,6 +28,9 @@ export default {
         items: [
           { text: '栈的顺序存储结构', link: '/stack/0001' },
           { text: '队列的链式存储结构', link: '/stack/0002' },
+          { text: '队列的顺序存储结构', link: '/stack/0003' },
+          { text: '栈-进制转换', link: '/stack/0004' },
+          { text: '栈-行编辑程序', link: '/stack/0005' },
         ]
       },
     ],

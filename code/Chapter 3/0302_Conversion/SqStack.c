@@ -1,49 +1,12 @@
----
-outline: deep
----
+/*=========================
+ * 栈的顺序存储结构（顺序栈）
+ ==========================*/
 
-# 栈的顺序存储结构
+#include "SqStack.h"
 
-## 结构定义
-
-```c
-/* 宏定义 */
-#define STACK_INIT_SIZE 100    // 顺序栈存储空间的初始分配量
-#define STACK_INCREMENT 10     // 顺序栈存储空间的分配增量
-
-/* 顺序栈元素类型定义 */
-typedef int SElemType;
-
-// 顺序栈元素结构
-typedef struct {
-    SElemType *base;    // 栈底指针
-    SElemType *top;     // 栈顶指针
-    int stackSize;      // 当前已分配的存储空间，元素为单位
-} SqStack;
-```
-
-![image-20231116152720657](./assets/image-20231116152720657.png)
-
-<script setup>
-import Stack from '../components/Stack.vue'
-</script>
-
-<Stack/>
-
-栈顶指针永远指向下一个地址
-
-## 初始化
-
-![image-20231116152649440](./assets/image-20231116152649440.png)
-
-初始化时栈顶指针指向栈底
-
-内存结构图
-
-![image-20231116152616608](./assets/image-20231116152616608.png)
-
-```c
 /*
+ * 初始化
+ *
  * 构造一个空栈。初始化成功则返回OK，否则返回ERROR。
  */
 Status InitStack(SqStack* S){
@@ -66,14 +29,10 @@ Status InitStack(SqStack* S){
 
     return OK;
 }
-```
 
-## 销毁
-
-![image-20231116152807476](./assets/image-20231116152807476.png)
-
-```c
 /*
+ * 销毁(结构)
+ *
  * 释放顺序栈所占内存。
  */
 Status DestroyStack(SqStack* S){
@@ -90,16 +49,9 @@ Status DestroyStack(SqStack* S){
 
     return OK;
 }
-```
-
-## 置空
-
-![image-20231116152855540](./assets/image-20231116152855540.png)
-
-置空时：栈顶指向栈底
-
-```c
 /*
+ * 置空(内容)
+ *
  * 只是清理顺序栈中存储的数据，不释放顺序栈所占内存。
  */
 Status ClearStack(SqStack* S){
@@ -110,13 +62,15 @@ Status ClearStack(SqStack* S){
     S->top = S->base;
     return OK;
 }
-```
 
-## 判空
-
-```c
 /*
+ * 判空
+ *
  * 判断顺序栈中是否包含有效数据。
+ *
+ * 返回值：
+ * TRUE : 顺序栈为空
+ * FALSE: 顺序栈不为空
  */
 Status StackEmpty(SqStack S) {
     // 栈顶指针等于栈底指针时为空
@@ -126,12 +80,10 @@ Status StackEmpty(SqStack S) {
         return ERROR;
     }
 }
-```
 
-## 计数
-
-```c
 /*
+ * 计数
+ *
  * 返回顺序栈包含的有效元素的数量。
  */
 int StackLength(SqStack S){
@@ -142,12 +94,9 @@ int StackLength(SqStack S){
     return (int)(S.top - S.base);
 }
 
-```
-
-## 取值
-
-```c
 /*
+ * 取值
+ *
  * 返回栈顶元素，并用e接收。
  */
 Status GetTop(SqStack S, SElemType* e){
@@ -160,22 +109,10 @@ Status GetTop(SqStack S, SElemType* e){
 
     return OK;
 }
-```
 
-## 入栈
-
-依次入栈 2,4,6,8,10,12
-
-![image-20231116152956853](./assets/image-20231116152956853.png)
-
-内存结构图
-
-![image-20231116153120273](./assets/image-20231116153120273.png)
-
-![image-20231116153213217](./assets/image-20231116153213217.png)
-
-```c
 /*
+ * 入栈
+ *
  * 将元素e压入到栈顶。
  */
 Status Push(SqStack* S, SElemType e){
@@ -200,14 +137,9 @@ Status Push(SqStack* S, SElemType e){
 
     return OK;
 }
-```
-
-## 出栈
-
-![image-20231116153331033](./assets/image-20231116153331033.png)
-
-```c
 /*
+ * 出栈
+ *
  * 将栈顶元素弹出，并用e接收。
  */
 Status Pop(SqStack* S, SElemType* e){
@@ -227,12 +159,9 @@ Status Pop(SqStack* S, SElemType* e){
 
     return OK;
 }
-```
-
-## 遍历
-
-```c
 /*
+ * 遍历
+ *
  * 用visit函数访问顺序栈S
  */
 Status StackTraverse(SqStack S, void(Visit)(SElemType)){
@@ -252,4 +181,3 @@ Status StackTraverse(SqStack S, void(Visit)(SElemType)){
 
     return OK;
 }
-```
