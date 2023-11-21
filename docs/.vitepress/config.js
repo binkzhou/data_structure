@@ -31,6 +31,7 @@ export default {
           { text: '队列的顺序存储结构', link: '/stack/0003' },
           { text: '栈-进制转换', link: '/stack/0004' },
           { text: '栈-行编辑程序', link: '/stack/0005' },
+          { text: '栈-表达式计算', link: '/stack/0006' },
         ]
       },
     ],
