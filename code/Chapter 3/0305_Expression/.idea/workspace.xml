@@ -20,10 +20,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="33a871be-8c33-4d46-8c6c-4639808a7d83" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../../docs/.vitepress/config.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../../docs/.vitepress/config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../docs/stack/0005.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../docs/stack/0005.md" afterDir="false" />
-    </list>
+    <list default="true" id="33a871be-8c33-4d46-8c6c-4639808a7d83" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -83,7 +80,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1700526854250</updated>
-      <workItem from="1700526855169" duration="8617000" />
+      <workItem from="1700526855169" duration="9245000" />
     </task>
     <servers />
   </component>

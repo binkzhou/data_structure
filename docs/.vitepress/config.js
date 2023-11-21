@@ -34,6 +34,13 @@ export default {
           { text: '栈-表达式计算', link: '/stack/0006' },
         ]
       },
+      {
+        text: '串',
+        items: [
+          { text: '串的定长顺序存储表示', link: '/sstring/0001' },
+          { text: '串的堆分配存储表示', link: '/sstring/0002' },
+        ]
+      },
     ],
 
     socialLinks: [
