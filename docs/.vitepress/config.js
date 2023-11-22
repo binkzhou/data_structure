@@ -40,6 +40,7 @@ export default {
           { text: '串的定长顺序存储表示', link: '/sstring/0001' },
           { text: '串的堆分配存储表示', link: '/sstring/0002' },
           { text: '串的块链分配存储表示', link: '/sstring/0003' },
+          { text: 'KMP算法', link: '/sstring/0004' },
         ]
       },
     ],
