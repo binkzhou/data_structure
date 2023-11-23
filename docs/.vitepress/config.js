@@ -15,6 +15,18 @@ export default {
 
     sidebar: [
       {
+        text: '基础知识',
+        items: [
+          { text: '预处理与条件编译', link: '/base/0001' },
+          { text: '内存管理', link: '/base/0002' },
+          { text: '结构体', link: '/base/0003' },
+          { text: '指针', link: '/base/0004' },
+          { text: '函数', link: '/base/0005' },
+          { text: '数组', link: '/base/0006' },
+          { text: '常用标准库函数', link: '/base/0007' },
+        ]
+      },
+      {
         text: '线性表',
         items: [
           { text: '顺序存储结构', link: '/linear/0001' },
@@ -41,6 +53,12 @@ export default {
           { text: '串的堆分配存储表示', link: '/sstring/0002' },
           { text: '串的块链分配存储表示', link: '/sstring/0003' },
           { text: 'KMP算法', link: '/sstring/0004' },
+        ]
+      },
+      {
+        text: '数组和广义表',
+        items: [
+          { text: '多维数组', link: '/array/0001' }
         ]
       },
     ],
