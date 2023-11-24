@@ -6,7 +6,9 @@
   "dependencies": {
     "vitepress": "^1.0.0-rc.25"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "markdown-it-mathjax3": "^4.3.2"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vitepress dev docs",

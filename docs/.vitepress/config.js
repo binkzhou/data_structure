@@ -58,7 +58,10 @@ export default {
       {
         text: '数组和广义表',
         items: [
-          { text: '多维数组', link: '/array/0001' }
+          { text: '多维数组', link: '/array/0001' },
+          { text: '稀疏矩阵-三元组顺序表', link: '/array/0002' },
+          { text: '稀疏矩阵-行逻辑链接的顺序表', link: '/array/0003' },
+          { text: '稀疏矩阵-十字链表', link: '/array/0004' },
         ]
       },
     ],
@@ -66,5 +69,8 @@ export default {
     socialLinks: [
       { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
     ]
+  },
+  markdown: {
+    math: true
   }
 }
