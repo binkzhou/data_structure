@@ -1,34 +1,25 @@
----
-outline: deep
----
+/*===================
+ * 十字链表（稀疏矩阵）
+ *
+ * 包含算法: 5.4
+ ====================*/
 
-# 稀疏矩阵(十字链表)
+#include "CrossList.h"
 
-::: tip
-
-介于数组 "不利于插入和删除数据" 的特点，以上两种压缩存储方式都不适合解决类似 "向矩阵中添加或删除非 0 元素" 的问题。
-
-:::
-
-![img](./assets/0954464147-0.gif)
-
-`chead` 列链表头指针：分别指向每一列
-
-`rhead` 行链表头指针：分别指向每一行
-
-## 创建矩阵
-
-![img](./assets/0954464147-0.gif)
-
-该行该列还没有元素：插入(1,1,3)行和列还没有元素
-
-该行前已有元素：插入(1,4,5),该行前有(1,1,3)
-
-该列前已有元素：插入(3,1,2),该列前有(1,1,3)
-
-```c
 /*
+ * ████████ 算法5.4 ████████
+ *
  * 创建稀疏矩阵M
+ *
+ *
+ *【备注】
+ *
+ * 教材中默认从控制台读取数据。
+ * 这里为了方便测试，避免每次运行都手动输入数据，
+ * 因而允许选择从预设的文件path中读取测试数据。
+ *
+ * 如果需要从控制台读取数据，则path为NULL或者为空串，
+ * 如果需要从文件中读取数据，则需要在path中填写文件名信息。
  */
 Status CreateSMatrix(CrossList* M, char* path) {
     int i,j,k;
@@ -149,11 +140,7 @@ Status CreateSMatrix(CrossList* M, char* path) {
 
     return OK;
 }
-```
 
-## 输出矩阵
-
-```c
 /**
 * 输出矩阵
 */
@@ -174,11 +161,7 @@ void PrintSMatrix(CrossList M){
         printf("\n");
     }
 }
-```
 
-## 销毁稀疏矩阵
-
-```c
 /*
  * 销毁稀疏矩阵
  */
@@ -204,12 +187,10 @@ Status DestroySMatrix(CrossList* M){
 
     return OK;
 }
-```
 
-## 矩阵复制
-
-```c
 /*
+ * 矩阵复制
+ *
  * 创建一个新矩阵T，该矩阵包含了从矩阵M中包含的数据。
  */
 Status CopySMatrix(CrossList M, CrossList* T) {
@@ -306,12 +287,10 @@ Status CopySMatrix(CrossList M, CrossList* T) {
 
     return OK;
 }
-```
 
-## 矩阵加法
-
-```c
 /*
+ * 矩阵加法
+ *
  * Q = M + N。
  */
 Status AddSMatrix(CrossList M, CrossList N, CrossList* Q) {
@@ -504,12 +483,10 @@ Status AddSMatrix(CrossList M, CrossList N, CrossList* Q) {
 
     return OK;
 }
-```
 
-## 矩阵减法
-
-```c
 /*
+ * 矩阵减法
+ *
  * Q = M - N。
  */
 Status SubSMatrix(CrossList M, CrossList N, CrossList* Q) {
@@ -702,12 +679,10 @@ Status SubSMatrix(CrossList M, CrossList N, CrossList* Q) {
 
     return OK;
 }
-```
 
-## 矩阵乘法
-
-```c
 /*
+ * 矩阵乘法
+ *
  * Q = M * N。
  */
 Status MultSMatrix(CrossList M, CrossList N, CrossList* Q) {
@@ -814,11 +789,7 @@ Status MultSMatrix(CrossList M, CrossList N, CrossList* Q) {
 
     return OK;
 }
-```
 
-## 矩阵转置
-
-```c
 /*
  * 矩阵转置
  */
@@ -915,5 +886,3 @@ Status TransposeSMatrix(CrossList M, CrossList* T) {
 
     return OK;
 }
-```
-

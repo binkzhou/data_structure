@@ -5,11 +5,12 @@ int main() {
     // 设置输出为UTF-8
     system("chcp 65001");
 
-    TSMatrix M,N;
+    TSMatrix M,N,W;
 
     // 创建稀疏矩阵
     CreateSMatrix(&M, "TestData_M.txt");
     CreateSMatrix(&N, "TestData_N.txt");
+    CreateSMatrix(&W, "TestData_W.txt");
 
     // 输出矩阵
     PrintSMatrix(M);
@@ -36,6 +37,7 @@ int main() {
     PrintSMatrix(Q1);
 
     // 快速转置
-    FastTransposeSMatrix(M,&Q1);
+    FastTransposeSMatrix(W,&Q1);
+    PrintSMatrix(Q1);
     return 0;
 }
