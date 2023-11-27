@@ -20,6 +20,7 @@ export default {
           { text: '预处理与条件编译', link: '/base/0001' },
           { text: '内存管理', link: '/base/0002' },
           { text: '结构体', link: '/base/0003' },
+          { text: '共用体', link: '/base/0008' },
           { text: '指针', link: '/base/0004' },
           { text: '函数', link: '/base/0005' },
           { text: '数组', link: '/base/0006' },
@@ -62,6 +63,8 @@ export default {
           { text: '稀疏矩阵-三元组顺序表', link: '/array/0002' },
           { text: '稀疏矩阵-行逻辑链接的顺序表', link: '/array/0003' },
           { text: '稀疏矩阵-十字链表', link: '/array/0004' },
+          { text: '广义表-头尾链表存储表示', link: '/array/0005' },
+          { text: '广义表-扩展线性链表存储表示', link: '/array/0006' },
         ]
       },
     ],
