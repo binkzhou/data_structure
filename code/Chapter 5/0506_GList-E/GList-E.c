@@ -1,60 +1,12 @@
----
-outline: deep
----
+/*===========================
+ * 广义表的扩展线性链表存储表示
+ ============================*/
 
-# 广义表的扩展线性链表存储表示
-
-对于头尾链表存储表示
-
-![广义表 {a,{b,c,d}} 的结构示意图](./assets/1011191502-1.gif)
-
-在头尾链表中的基础上增加`tp`指针指向下一个元素
-
-![](./assets/1011196043-2.gif)
-
-广义表 `{a,{b,c,d}}`的存储结构示意图
-
-![](./assets/1011191509-3.gif)
-
-
-
-## 结构定义
-
-``` c
-/* 原子元素类型 */
-typedef char AtomType;
+#include "GList-E.h"
 
 /*
- * 广义表结点标记
+ * 初始化
  *
- * Atom-0：原子结点
- * List-1：表结点
- */
-typedef enum { Atom, List } ElemTag;
-
-/* 广义表（扩展线性链表存储表示）类型定义 */
-typedef struct GLNode {
-    ElemTag tag;    // 公共标记，用于区分原子结点和表结点
-
-    // 原子结点和表结点的联合部分
-    union
-    {
-        AtomType atom;      // atom是原子结点的值域，AtomType由用户定义
-        struct GLNode* hp;  // 指向表头
-    } Node;
-    struct GLNode* tp;      // 指向表尾
-} GLNode;
-
-/* 广义表类型 */
-typedef GLNode* GList;
-```
-
-## 初始化
-
-![image-20231128131045907](./assets/image-20231128131045907.png)
-
-```c
-/*
  * 初始化空的广义表，长度为0，深度为1。
  *
  *【注】
@@ -76,70 +28,7 @@ Status InitGList(GList* L){
 
     return OK;
 }
-```
 
-## 获取子串
-
-::: tip
-
-`S` = `(a,(b,c,d),(e,f))`
-`str`为去掉()的值 = `a,(b,c,d),(e,f)`
-
-第一次遍历: `hstr` = `a`，`str`变为`(b,c,d),(e,f)`,原子结点直接追加
-
-第二次遍历：`hstr` = `(b,c,d)`，`str`变为`(e,f)`,对于广义表`hstr`会进行递归遍历
-
-第三次遍历：`hstr` = `(e,f)`，`str`变为空,对于广义表`hstr`会进行递归遍历
-
-:::
-
-```c
-static void sever(SString hstr, SString str) {
-    int i, k, n;
-    SString ch;
-    // str a,(b,c,d)
-    n = StrLength(str);
-
-    i = 0;  // 遍历字符串时的游标
-    k = 0;  // 标记遇到的未配对括号数量
-
-    do {
-        ++i;
-
-        // 截取str第一个字符
-        SubString(ch, str, i, 1);
-
-        if(ch[1] == '(') {
-            ++k;
-        }
-
-        if(ch[1] == ')') {
-            --k;
-        }
-    } while(i < n && (ch[1] != ',' || k != 0));
-
-    // 如果存在多个广义表结点
-    if(i < n) {
-        SubString(hstr, str, 1, i - 1);
-        SubString(str, str, i + 1, n - i);
-
-        // 只有一个广义表结点
-    } else {
-        StrCopy(hstr, str);
-        ClearString(str);
-    }
-}
-```
-
-## 创建
-
-::: tip
-
-sub 如果不为空继续求表尾
-
-:::
-
-```c
 /*
  * 创建
  *
@@ -203,12 +92,50 @@ Status CreateGList(GList* L, SString S) {
 
     return OK;
 }
-```
 
-## 销毁
-
-```c
 /*
+ * 将非空串str分割成两部分：hsub为第一个','之前的子串，str为第一个','之后的子串。
+ *
+ *【注】
+ * 1.这里假设字符串str输入正确，其中无空白符号，
+ *   但str外层的括号可能脱去，也可能未脱去。
+ * 2.分离完成后，str也会发生变化
+ */
+static void sever(SString hstr, SString str) {
+    int i, k, n;
+    SString ch;
+
+    n = StrLength(str);
+
+    i = 0;  // 遍历字符串时的游标
+    k = 0;  // 标记遇到的未配对括号数量
+
+    do {
+        ++i;
+
+        // 截取str第一个字符
+        SubString(ch, str, i, 1);
+
+        if(ch[1] == '(') {
+            ++k;
+        }
+        if(ch[1] == ')') {
+            --k;
+        }
+    } while(i < n && (ch[1] != ',' || k != 0));
+
+    if(i < n) {
+        SubString(hstr, str, 1, i - 1);
+        SubString(str, str, i + 1, n - i);
+    } else {
+        StrCopy(hstr, str);
+        ClearString(str);
+    }
+}
+
+/*
+ * 销毁
+ *
  * 释放广义表所占内存。
  */
 Status DestroyGList(GList* L) {
@@ -250,12 +177,10 @@ Status DestroyGList(GList* L) {
 
     return OK;
 }
-```
 
-## 复制
-
-```c
 /*
+ * 复制
+ *
  * 由广义表L复制得到广义表T。
  */
 Status CopyGList(GList* T, GList L) {
@@ -295,12 +220,10 @@ Status CopyGList(GList* T, GList L) {
 
     return OK;
 }
-```
 
-## 计数
-
-```c
 /*
+ * 计数
+ *
  * 返回广义表的长度。
  */
 int GListLength(GList L) {
@@ -321,12 +244,10 @@ int GListLength(GList L) {
 
     return count;
 }
-```
 
-## 深度
-
-```c
 /*
+ * 深度
+ *
  * 返回广义表的深度
  */
 int GListDepth(GList L) {
@@ -361,12 +282,10 @@ int GListDepth(GList L) {
 
     return max + 1;
 }
-```
 
-## 判空
-
-```c
 /*
+ * 判空
+ *
  * 判断广义表是否为空。
  */
 Status GListEmpty(GList L) {
@@ -381,11 +300,7 @@ Status GListEmpty(GList L) {
         return ERROR;
     }
 }
-```
 
-## 表头
-
-```c
 /*
  * 表头
  */
@@ -406,11 +321,7 @@ GList GetHead(GList L) {
 
     return p;
 }
-```
 
-## 表尾
-
-```c
 /*
  * 表尾
  */
@@ -432,12 +343,10 @@ GList GetTail(GList L) {
 
     return p;
 }
-```
 
-## 插入
-
-```c
 /*
+ * 插入
+ *
  * 将元素e插入为广义表L的第一个元素。
  */
 Status InsertFirst(GList* L, GList e) {
@@ -456,12 +365,10 @@ Status InsertFirst(GList* L, GList e) {
 
     return OK;
 }
-```
 
-## 删除
-
-```c
 /*
+ * 删除
+ *
  * 将广义表L的第一个元素删除，并用e返回。
  */
 Status DeleteFirst(GList* L, GList* e) {
@@ -480,12 +387,10 @@ Status DeleteFirst(GList* L, GList* e) {
 
     return OK;
 }
-```
 
-## 遍历
-
-```c
 /*
+ * 遍历
+ *
  * 用visit函数访问广义表L。
  */
 void Traverse(GList L, void(Visit)(AtomType)) {
@@ -501,5 +406,3 @@ void Traverse(GList L, void(Visit)(AtomType)) {
 
     Traverse(L->tp, Visit);
 }
-```
-

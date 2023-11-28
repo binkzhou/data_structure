@@ -67,6 +67,13 @@ export default {
           { text: '广义表-扩展线性链表存储表示', link: '/array/0006' },
         ]
       },
+      {
+        text: '树',
+        items: [
+          { text: '树与二叉树', link: '/tree/0001' },
+          { text: '二叉树顺序存储结构', link: '/tree/0002' },
+        ]
+      },
     ],
 
     socialLinks: [

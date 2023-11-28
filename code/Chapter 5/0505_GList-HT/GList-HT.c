@@ -1,63 +1,14 @@
----
-outline: deep
----
-
-# 广义表的头尾链表存储表示
-
-广义表（Generalized Table）是一种数据结构，它可以表示任何二维表，包括二进制表、三角表、矩阵、树形表、图表等。广义表的特点是可以表示任何二维表，并且广义表的表示方法与具体的二维表无关。
-
-我们可以创建一个整形数组去存储`{1,2,3}`，我们也可以创建一个二维整形数组去存储<span v-pre><code>{{1,2,3},{4,5,6}}</code></span>，但数组不适合用来存储类似<span v-pre><code>{1,{1,2,3}}</code></span>这样的数据。
-
-广义表的两种结点：原子结点用来存储数据，表结点用了存储表结点或原子结点
-
-![广义表节点的两种类型](./assets/10111a313-0.gif)
-
-广义表`(a,(b,c,d))`：原子 a 和子表 (b,c,d) 构成，而子表 (b,c,d) 又是由原子 b、c 和 d 构成
-
-::: info
-
-对于 (a,(b,c,d)) 来说，原子 a 和子表 (b,c,d) 是并列的，而在子表 (b,c,d) 中原子 b、c、d 是并列的。
-
-:::
-
-![广义表 {a,{b,c,d}} 的结构示意图](./assets/1011191502-1.gif)
-
-## 结构定义
-
-```c
-/* 原子元素类型 */
-typedef char AtomType;
-
-/**
- * 广义表结点标记
+/*============================
+ * 广义表的头尾链表存储表示
  *
- * Atom-0：原子结点
- * List-1：表结点
- */
- typedef enum { Atom, List } ElemTag;
+ * 包含算法: 5.5、5.6、5.7、5.8
+ =============================*/
 
- /* 广义表（头尾链表存储表示）类型定义 */
- typedef struct GLNode{
-     ElemTag tag;   // 公共标记，用于区分原子结点和表结点
+#include "GList-HT.h"
 
-     // 原子结点和表结点的联合部分
-     union {
-         AtomType atom;  // atom是原子结点的值域，AtomType由用户定义
-         struct {
-             struct GLNode* hp;  // 指向表头
-             struct GLNode* tp;  // 指向表尾
-         } ptr;
-     } Node;
- } GLNode;
-
-/* 广义表类型 */
-typedef GLNode* GList;
-```
-
-## 初始化
-
-```c
 /*
+ * 初始化
+ *
  * 初始化空的广义表，长度为0，深度为1。
  *
  *【注】
@@ -72,78 +23,12 @@ Status InitGList(GList* L){
 
     return OK;
 }
-```
 
-## 获取子串
-
-::: tip
-
-`S` = `(a,(b,c,d),(e,f)) `
-
-`str`为去掉()的值 = `a,(b,c,d),(e,f)`
-
-第一次遍历: `hstr` = `a`，`str`变为`(b,c,d),(e,f)`,原子结点直接追加
-
-第二次遍历：`hstr` = `(b,c,d)`，`str`变为`(e,f)`,对于广义表`hstr`会进行递归遍历
-
-第三次遍历：`hstr` = `(e,f)`，`str`变为空,对于广义表`hstr`会进行递归遍历
-
-:::
-
-```c
-static void sever(SString hstr, SString str) {
-    int i, k, n;
-    SString ch;
-    // str a,(b,c,d)
-    n = StrLength(str);
-
-    i = 0;  // 遍历字符串时的游标
-    k = 0;  // 标记遇到的未配对括号数量
-
-    do {
-        ++i;
-
-        // 截取str第一个字符
-        SubString(ch, str, i, 1);
-
-        if(ch[1] == '(') {
-            ++k;
-        }
-
-        if(ch[1] == ')') {
-            --k;
-        }
-    } while(i < n && (ch[1] != ',' || k != 0));
-
-    // 如果存在多个广义表结点
-    if(i < n) {
-        SubString(hstr, str, 1, i - 1);
-        SubString(str, str, i + 1, n - i);
-
-        // 只有一个广义表结点
-    } else {
-        StrCopy(hstr, str);
-        ClearString(str);
-    }
-}
-```
-
-## 创建
-
-::: info
-
-如果为`()`创建一个空的广义表
-
-如果只有一个字符如`a`则创建一个原子
-
-如果多个字符的广义表如`(b,c,d)`则创建一个广义表
-
-:::
-
-::: code-group
-
-```c [GList-HT.c]
 /*
+ * ████████ 算法5.7 ████████
+ *
+ * 创建
+ *
  * 由字符串S创建广义表L。
  */
 Status CreateGList(GList* L, SString S) {
@@ -222,32 +107,53 @@ Status CreateGList(GList* L, SString S) {
 
     return OK;
 }
-```
 
-```c [main.c]
-#include <stdio.h>
-#include "GList-HT.h"
 
-int main() {
-    GList g3;
-    SString S3;
+/*
+ * ████████ 算法5.8 ████████
+ *
+ * 将非空串str分割成两部分：hsub为第一个','之前的子串，str为第一个','之后的子串。
+ *
+ *【注】
+ * 1.这里假设字符串str输入正确，其中无空白符号，且str【已经脱去最外层括号】。
+ * 2.分离完成后，str也会发生变化
+ */
+static void sever(SString hstr, SString str) {
+    int i, k, n;
+    SString ch;
+    // str a,(b,c,d)
+    n = StrLength(str);
 
-    // 创建广义表
-    char* s3 = "(a,(b,c,d),(e,f))";
+    i = 0;  // 遍历字符串时的游标
+    k = 0;  // 标记遇到的未配对括号数量
 
-    StrAssign(S3,s3);
-    CreateGList(&g3,S3);
-    return 0;
+    do {
+        ++i;
+
+        // 截取str第一个字符
+        SubString(ch, str, i, 1);
+
+        if(ch[1] == '(') {
+            ++k;
+        }
+
+        if(ch[1] == ')') {
+            --k;
+        }
+    } while(i < n && (ch[1] != ',' || k != 0));
+
+    // 如果存在多个广义表结点
+    if(i < n) {
+        SubString(hstr, str, 1, i - 1);
+        SubString(str, str, i + 1, n - i);
+
+        // 只有一个广义表结点
+    } else {
+        StrCopy(hstr, str);
+        ClearString(str);
+    }
 }
-```
 
-:::
-
-## 销毁
-
-![image-20231128105322870](./assets/image-20231128105322870.png)
-
-```c
 /*
  * 销毁
  *
@@ -277,20 +183,12 @@ Status DestroyGList(GList* L) {
 
     return OK;
 }
-```
 
-## 复制
-
-::: info
-
-如果是原子结点直接复制
-
-如果是表结点递归复制
-
-:::
-
-```c
 /*
+ * ████████ 算法5.6 ████████
+ *
+ * 复制
+ *
  * 由广义表L复制得到广义表T。
  */
 Status CopyGList(GList* T, GList L) {
@@ -322,18 +220,10 @@ Status CopyGList(GList* T, GList L) {
 
     return OK;
 }
-```
 
-## 计数
-
-::: info
-
-只包含最外层的数量，如`(a,(b,c,d),(e,f))` 的长度为3
-
-:::
-
-```c
 /*
+ * 计数
+ *
  * 返回广义表的长度。
  */
 int GListLength(GList L){
@@ -346,12 +236,12 @@ int GListLength(GList L){
 
     return count;
 }
-```
 
-## 深度
-
-```c
 /*
+ * ████████ 算法5.5 ████████
+ *
+ * 深度
+ *
  * 返回广义表的深度
  */
 int GListDepth(GList L) {
@@ -379,22 +269,16 @@ int GListDepth(GList L) {
     // 非空表的深度是各子元素最大深度加一
     return max + 1;
 }
-```
 
-## 判空
-
-```c
 /*
+ * 判空
+ *
  * 判断广义表是否为空。
  */
 Status GListEmpty(GList L) {
     return L == NULL ? TRUE : FALSE;
 }
-```
 
-## 获取表头
-
-```c
 /*
  * 表头
  */
@@ -410,11 +294,7 @@ GList GetHead(GList L){
 
     return p;
 }
-```
 
-## 获取表尾
-
-```c
 /*
  * 表尾
  */
@@ -430,12 +310,10 @@ GList GetTail(GList L){
 
     return p;
 }
-```
 
-## 头插
-
-```c
 /*
+ * 插入
+ *
  * 将元素e插入为广义表L的第一个元素。
  */
 Status InsertFirst(GList* L, GList e) {
@@ -457,12 +335,10 @@ Status InsertFirst(GList* L, GList e) {
 
     return OK;
 }
-```
 
-## 删除
-
-```c
 /*
+ * 删除
+ *
  * 将广义表L的第一个元素删除，并用e返回。
  */
 Status DeleteFirst(GList* L, GList* e) {
@@ -482,14 +358,10 @@ Status DeleteFirst(GList* L, GList* e) {
 
     return OK;
 }
-```
 
-## 遍历
-
-`(a,(b,c,d),(e,f))` ==> `a b c d e f`
-
-```c
 /*
+ * 遍历
+ *
  * 用visit函数访问广义表L。
  */
 void Traverse(GList L, void(Visit)(AtomType)) {
@@ -506,5 +378,3 @@ void Traverse(GList L, void(Visit)(AtomType)) {
     }
 
 }
-```
-
