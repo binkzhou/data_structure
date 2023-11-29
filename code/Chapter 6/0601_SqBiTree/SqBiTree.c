@@ -80,9 +80,391 @@ Status CreateBiTree(SqBiTree T, char* path) {
     return OK;
 }
 
+/*
+ * 判空
+ *
+ * 判断二叉树是否为空树。
+ */
+Status BiTreeEmpty(SqBiTree T){
+    return T[0] == '\0' ? TRUE : FALSE;
+}
+
+/*
+ * 树深
+ *
+ * 返回二叉树的深度（层数）。
+ */
+int BiTreeDepth(SqBiTree T){
+    return TreeDepth(T,0);
+}
+
+/*
+ * 取值
+ *
+ * 返回二叉树中指定结点的值。
+ */
+TElemType Value(SqBiTree T, TElemType e){
+    int index;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)){
+        return '\0';
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T,e,0);
+
+    // 如果没有找到元素e
+    if(index == -1){
+        return '\0';
+    } else{
+        return T[index];
+    }
+}
+
+/*
+ * 赋值
+ *
+ * 为二叉树指定的结点赋值。
+ */
+Status Assign(SqBiTree T, TElemType e, TElemType value){
+    int index;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return ERROR;
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T,e,0);
+
+    // 如果没有找到元素e
+    if(index == -1){
+        return ERROR;
+    } else{
+        // 进行赋值
+        T[index] = value;
+        return OK;
+    }
+}
+
+/*
+ * 根
+ *
+ * 返回二叉树的根结点。
+ */
+TElemType Root(SqBiTree T){
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return '\0';
+    }
+
+    return T[0];
+}
+
+/*
+ * 双亲
+ *
+ * 返回二叉树中结点e的双亲结点。
+ */
+TElemType Parent(SqBiTree T, TElemType e){
+    int index;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return '\0';
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T,e,0);
+
+    // 如果没有找到元素e
+    if(index == -1) {
+        return '\0';
+
+        // 如果e是根结点
+    } else if(index == 0) {
+        return '\0';
+    } else {
+        // 返回父结点
+        return T[(index - 1) / 2];
+    }
+}
+
+/*
+ * 左孩子
+ *
+ * 返回二叉树中结点e的左孩子结点。
+ */
+TElemType LeftChild(SqBiTree T, TElemType e) {
+    int index;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return '\0';
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T, e, 0);
+
+    // 如果没有找到元素e
+    if(index == -1) {
+        return '\0';
+    } else {
+        // 返回左孩子
+        return T[2 * index + 1];
+    }
+}
+
+/*
+ * 右孩子
+ *
+ * 返回二叉树中结点e的右孩子结点。
+ */
+TElemType RightChild(SqBiTree T, TElemType e) {
+    int index;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return '\0';
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T, e, 0);
+
+    // 如果没有找到元素e
+    if(index == -1) {
+        return '\0';
+    } else {
+        // 返回右孩子
+        return T[2 * index + 2];
+    }
+}
+
+/*
+ * 左兄弟
+ *
+ * 返回二叉树中结点e的左兄弟结点。
+ */
+TElemType LeftSibling(SqBiTree T, TElemType e){
+    int index, p;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return '\0';
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T, e, 0);
+
+    // 获取结点e的索引
+    index = EIndex(T, e, 0);
+
+    // 如果没有找到元素e
+    if(index == -1) {
+        return '\0';
+
+        // 如果e是根结点
+    } else if(index == 0) {
+        return '\0';
+    } else {
+        // 获取父结点的索引
+        p = (index - 1) / 2;
+
+        // 如果结点e是右孩子，则返回其左兄弟
+        if(T[2 * p + 2] == e) {
+            return T[2 * p + 1];
+        } else {
+            return '\0';
+        }
+    }
+}
+
+/*
+ * 右兄弟
+ *
+ * 返回二叉树中结点e的右兄弟结点。
+ */
+TElemType RightSibling(SqBiTree T, TElemType e) {
+    int index, p;
+
+    // 遇到空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return '\0';
+    }
+
+    // 获取结点e的索引
+    index = EIndex(T, e, 0);
+
+    // 如果没有找到元素e
+    if(index == -1) {
+        return '\0';
+
+        // 如果e是根结点
+    } else if(index == 0) {
+        return '\0';
+    } else {
+        // 获取父结点的索引
+        p = (index - 1) / 2;
+
+        // 如果结点e是左孩子，则返回其右兄弟
+        if(T[2 * p + 1] == e) {
+            return T[2 * p + 2];
+        } else {
+            return '\0';
+        }
+    }
+}
+
+/*
+ * 先序遍历
+ */
+Status PreOrderTraverse(SqBiTree T, Status(Visit)(TElemType)) {
+    Status status;
+
+    status = PreTraverse(T, Visit, 0);
+    printf("\n");
+
+    return status;
+}
+
+/*
+ * 中序遍历
+ */
+Status InOrderTraverse(SqBiTree T, Status(Visit)(TElemType)) {
+    Status status;
+
+    status = InTraverse(T, Visit, 0);
+    printf("\n");
+
+    return status;
+}
+
+/*
+ * 后序遍历
+ */
+Status PostOrderTraverse(SqBiTree T, Status(Visit)(TElemType)) {
+    Status status;
+
+    status = PostTraverse(T, Visit, 0);
+    printf("\n");
+
+    return status;
+}
+
+/*
+ * 层序遍历
+ */
+Status LevelOrderTraverse(SqBiTree T, Status(Visit)(TElemType)) {
+    int i;
+    int deep;
+    int len;
+
+    // 二叉树层数
+    deep = BiTreeDepth(T);
+    if(deep == 0) {
+        return OK;
+    }
+
+    // 二叉树元素数量（最大值）
+    len = (int) pow(2, deep) - 1;
+
+    for(i = 0; i < len; i++) {
+        if(T[i] != '\0') {
+            if(!Visit(T[i])) {
+                // 如果遇到访问错误，会即时返回
+                return ERROR;
+            }
+        }
+    }
+
+    printf("\n");
+
+    return OK;
+}
+
+/*
+ * 插入
+ *
+ * 已知c为与T不相交的非空二叉树，且c的右子树为空，
+ * 根据LR的取值(0或1)，将c插入为T中结点p的左子树/右子树，
+ * 并且，将p结点原有的左子树/右子树嫁接为二叉树c的右子树。
+ */
+Status InsertChild(SqBiTree T, TElemType p, int LR, SqBiTree c) {
+    int index;
+
+    // 如果待插入的树为空树则无需继续计算
+    if(BiTreeEmpty(c)) {
+        return ERROR;
+    }
+
+    // 获取结点p的索引
+    index = EIndex(T, p, 0);
+
+    // 如果p结点不存在，则返回错误提示
+    if(index == -1) {
+        return ERROR;
+    }
+
+    // 将c插入为p的左子树
+    if(LR==0) {
+        // 如果p处存在左子树
+        if(T[2*index+1]!='\0') {
+            // 将p的左子树插入为c的右子树
+            Transfer(T, 2*index+1, c, 2);
+        }
+
+        Transfer(c, 0, T, 2*index+1);
+
+        // 将c插入为p的右子树
+    } else {
+        // 如果p处存在右子树
+        if(T[2*index+2]!='\0') {
+            // 将p的右子树插入为c的右子树
+            Transfer(T, 2*index+2, c, 2);
+        }
+
+        Transfer(c, 0, T, 2*index+2);
+    }
+
+    return OK;
+}
+
+/*
+ * 删除
+ *
+ * 根据LR的取值(0或1)，删除结点p的左子树/右子树。
+ */
+Status DeleteChild(SqBiTree T, TElemType p, int LR) {
+    int index;
+
+    // 如果待删除的树为空树则无需继续计算
+    if(BiTreeEmpty(T)) {
+        return ERROR;
+    }
+
+    // 获取结点p的索引
+    index = EIndex(T, p, 0);
+
+    // 如果待删除结点不存在，则返回错误提示
+    if(index == -1) {
+        return ERROR;
+    }
+
+    // 如果需要删除p的左子树
+    if(LR == 0) {
+        Delete(T, 2 * index + 1);
+
+        // 如果需要删除p的右子树
+    } else {
+        Delete(T, 2 * index + 2);
+    }
+
+    return OK;
+}
+
 /*━━━━━━━━━━━━━━━━━━━━━━ 仅限内部使用的函数 ━━━━━━━━━━━━━━━━━━━━━━*/
 
-// 创建二叉树的内部函数
 // 创建二叉树的内部函数
 static void CreateTree(SqBiTree T, int i, FILE* fp) {
     char ch;
@@ -100,5 +482,148 @@ static void CreateTree(SqBiTree T, int i, FILE* fp) {
         T[i] = ch;
         CreateTree(T, 2 * i + 1, fp); // 创建左子树
         CreateTree(T, 2 * i + 2, fp); // 创建右子树
+    }
+}
+
+// 求二叉树深度的内部函数
+static int TreeDepth(SqBiTree T, int i) {
+    int ld, rd;     // 记录左右子树的深度
+
+    if(T[i] == '\0') {
+        return 0;
+    } else {
+        ld = TreeDepth(T, 2 * i + 1);
+        rd = TreeDepth(T, 2 * i + 2);
+
+        return (ld >= rd ? ld : rd) + 1;
+    }
+}
+
+// 返回二叉树结点e的索引号，i是结点p的索引号
+static int EIndex(SqBiTree T, TElemType e, int i){
+    int cl,cr;
+
+    // 已经越界
+    if(i >= MAX_TREE_SIZE){
+        return -1;
+    }
+
+    // e的值不合规
+    if(e == '\0'){
+        return -1;
+    }
+
+    // 找到了元素
+    if(T[i] == e){
+        return i;
+    }
+
+    // 在左子树中查找
+    cl = EIndex(T,e,2 * i + 1);
+    if(cl != -1){
+        return cl;
+    }
+
+    // 在右子树中查找
+    cr = EIndex(T,e, 2 * i + 2);
+    if(cr != -1){
+        return cr;
+    }
+
+    // 如果没有找到
+    return -1;
+}
+
+// 先序遍历的内部实现
+static Status PreTraverse(SqBiTree T, Status(Visit)(TElemType), int i) {
+    // 越界
+    if(i >= MAX_TREE_SIZE) {
+        return ERROR;
+    }
+
+    if(T[i]) {
+        if(Visit(T[i])) {
+            if(PreTraverse(T, Visit, 2 * i + 1)) {
+                if(PreTraverse(T, Visit, 2 * i + 2)) {
+                    return OK;
+                }
+            }
+        }
+
+        return ERROR;
+
+        // 遇到空树则无需继续计算
+    } else {
+        return OK;
+    }
+}
+
+// 中序遍历的内部实现
+static Status InTraverse(SqBiTree T, Status(Visit)(TElemType), int i) {
+    // 越界
+    if(i >= MAX_TREE_SIZE) {
+        return ERROR;
+    }
+
+    if(T[i]) {
+        if(InTraverse(T, Visit, 2 * i + 1)) {
+            if(Visit(T[i])) {
+                if(InTraverse(T, Visit, 2 * i + 2)) {
+                    return OK;
+                }
+            }
+
+        }
+
+        return ERROR;
+
+        // 遇到空树则无需继续计算
+    } else {
+        return OK;
+    }
+}
+
+// 后序遍历的内部实现
+static Status PostTraverse(SqBiTree T, Status(Visit)(TElemType), int i) {
+    // 越界
+    if(i >= MAX_TREE_SIZE) {
+        return ERROR;
+    }
+
+    if(T[i]) {
+        if(PostTraverse(T, Visit, 2 * i + 1)) {
+            if(PostTraverse(T, Visit, 2 * i + 2)) {
+                if(Visit(T[i])) {
+                    return OK;
+                }
+
+            }
+        }
+
+        return ERROR;
+
+        // 遇到空树则无需继续计算
+    } else {
+        return OK;
+    }
+}
+
+// 摘下二叉树T中的子树i，将其插入为二叉树R的子树j
+static void Transfer(SqBiTree T, int i, SqBiTree R, int j) {
+    R[j] = T[i];
+
+    if(T[i] != '\0') {
+        Transfer(T, 2 * i + 1, R, 2 * j + 1);
+        Transfer(T, 2 * i + 2, R, 2 * j + 2);
+        T[i] = '\0';
+    }
+}
+
+// 删除二叉树T中的子树i
+static void Delete(SqBiTree T, int i) {
+    if(T[i] != '\0') {
+        T[i] = '\0';
+        Delete(T, 2 * i + 1);
+        Delete(T, 2 * i + 2);
     }
 }

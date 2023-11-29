@@ -71,7 +71,10 @@ export default {
         text: '树',
         items: [
           { text: '树与二叉树', link: '/tree/0001' },
-          { text: '二叉树顺序存储结构', link: '/tree/0002' },
+          { text: '二叉树-顺序存储结构', link: '/tree/0002' },
+          { text: '二叉树-二叉链存储结构', link: '/tree/0003' },
+          { text: '二叉树-三叉链存储结构', link: '/tree/0004' },
+          { text: '二叉树-线索二叉树', link: '/tree/0005' },
         ]
       },
     ],
