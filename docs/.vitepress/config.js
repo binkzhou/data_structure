@@ -75,6 +75,13 @@ export default {
           { text: '二叉树-二叉链存储结构', link: '/tree/0003' },
           { text: '二叉树-三叉链存储结构', link: '/tree/0004' },
           { text: '二叉树-线索二叉树', link: '/tree/0005' },
+          { text: '树-双亲表示法', link: '/tree/0006' },
+          // { text: '树-孩子表示法', link: '/tree/0007' },
+          // { text: '树-孩子兄弟表示法', link: '/tree/0008' },
+          // { text: '集合', link: '/tree/0009' },
+          // { text: '赫夫曼树', link: '/tree/0010' },
+          // { text: '冪集', link: '/tree/0011' },
+          // { text: 'N 皇后问题', link: '/tree/0012' },
         ]
       },
     ],

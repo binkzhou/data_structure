@@ -1,39 +1,14 @@
----
-outline: deep
----
+/*=======================
+ * 二叉树的三叉链表存储结构
+ ========================*/
 
-# 二叉树的三叉链表存储结构
+#include "BiTriTree.h"
+#include "LinkQueue.h"
+#include "Status.h"
 
-二叉链拥有左子树指针,右子树指针和指向父结点的指针
-
-![二叉树节点结构](./assets/1039322350-2-1701235552126-1.gif)
-
-三叉链存储二叉树
-
-![自定义二叉树的链式存储结构](./assets/103932F16-3.gif)
-
-## 结构定义
-
-```c
-/* 二叉树元素类型定义，这里假设其元素类型为char */
-typedef char TElemType;
-
-/* 二叉树结点定义，增加了双亲结点的定义 */
-typedef struct BiTriTNode{
-    TElemType data;             // 结点元素
-    struct BiTriTNode* lchild;  // 左孩子指针
-    struct BiTriTNode* rchild;  // 右孩子指针
-    struct BiTriTNode* parent;  // 双亲结点指针
-} BiTriTNode;
-
-/* 指向二叉树结点的指针 */
-typedef BiTriTNode* BiTriTree;
-```
-
-## 初始化
-
-```c
 /*
+ * 初始化
+ *
  * 构造空二叉树。
  */
 Status InitBiTree(BiTriTree* T){
@@ -45,85 +20,10 @@ Status InitBiTree(BiTriTree* T){
 
     return OK;
 }
-```
-
-## 创建二叉树
-
-```c {27,32}
-/*━━━━━━━━━━━━━━━━━━━━━━ 仅限内部使用的函数 ━━━━━━━━━━━━━━━━━━━━━━*/
-
-// 创建二叉树的内部函数
-static void CreateTree(BiTriTree* T,FILE* fp){
-    char ch;
-
-    // 读取当前结点的值
-    if(fp == NULL) {
-        scanf("%c", &ch);
-    } else {
-        ReadData(fp, "%c", &ch);
-    }
-
-    if(ch == '^') {
-        *T = NULL;
-    } else {
-        // 生成根结点
-        *T = (BiTriTree) malloc(sizeof(BiTriTNode));
-        if(!(*T)) {
-            exit(OVERFLOW);
-        }
-        (*T)->data = ch;
-        (*T)->parent = NULL;
-
-        CreateTree(&((*T)->lchild), fp); // 创建左子树
-        if((*T)->lchild != NULL) {
-            (*T)->lchild->parent = *T;
-        }
-
-        CreateTree(&((*T)->rchild), fp); // 创建右子树
-        if((*T)->rchild != NULL) {
-            (*T)->rchild->parent = *T;
-        }
-    }
-}
 
 /*
- * 按照预设的定义来创建二叉树。
- * 这里约定使用【先序序列】来创建二叉树。
- */
-Status CreateBiTree(BiTriTree* T, char* path){
-    FILE* fp;
-    int readFromConsole;   // 是否从控制台读取数据
-
-    // 如果没有文件路径信息，则从控制台读取输入
-    readFromConsole = path == NULL || strcmp(path, "") == 0;
-
-    if(readFromConsole) {
-        printf("请输入二叉树的先序序列，如果没有子结点，使用^代替：");
-        CreateTree(T, NULL);
-    } else {
-        // 打开文件，准备读取测试数据
-        fp = fopen(path, "r");
-        if(fp == NULL) {
-            return ERROR;
-        }
-        CreateTree(T, fp);
-        fclose(fp);
-    }
-
-    return OK;
-}
-```
-
-## 销毁
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
-/*
+ * 销毁
+ *
  * 释放二叉树所占内存。
  *
  *【注】
@@ -135,20 +35,9 @@ Status DestroyBiTree(BiTriTree* T) {
     return ERROR;
 }
 
-```
-
-## 置空
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-清除左子树，清除右子树。释放当前结点。
-
-```c
 /*
+ * 置空
+ *
  * 清理二叉树中的数据，使其成为空树。
  */
 Status ClearBiTree(BiTriTree* T) {
@@ -172,37 +61,60 @@ Status ClearBiTree(BiTriTree* T) {
 
     return OK;
 }
-```
 
-## 判空
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
+ * ████████ 算法6.4 ████████
+ *
+ * 创建
+ *
+ * 按照预设的定义来创建二叉树。
+ * 这里约定使用【先序序列】来创建二叉树。
+ *
+ *
+ *【备注】
+ *
+ * 教材中默认从控制台读取数据。
+ * 这里为了方便测试，避免每次运行都手动输入数据，
+ * 因而允许选择从预设的文件path中读取测试数据。
+ *
+ * 如果需要从控制台读取数据，则path为NULL或者为空串，
+ * 如果需要从文件中读取数据，则需要在path中填写文件名信息。
+ */
+Status CreateBiTree(BiTriTree* T, char* path){
+    FILE* fp;
+    int readFromConsole;   // 是否从控制台读取数据
+
+    // 如果没有文件路径信息，则从控制台读取输入
+    readFromConsole = path == NULL || strcmp(path, "") == 0;
+
+    if(readFromConsole) {
+        printf("请输入二叉树的先序序列，如果没有子结点，使用^代替：");
+        CreateTree(T, NULL);
+    } else {
+        // 打开文件，准备读取测试数据
+        fp = fopen(path, "r");
+        if(fp == NULL) {
+            return ERROR;
+        }
+        CreateTree(T, fp);
+        fclose(fp);
+    }
+
+    return OK;
+}
+
+/*
+ * 判空
+ *
  * 判断二叉树是否为空树。
  */
 Status BiTreeEmpty(BiTriTree T){
     return T == NULL ? TRUE : FALSE;
 }
-```
 
-## 树深
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-计算左右子树深度，获取深度最大的那一个加上当前结点深度
-
-```c
 /*
+ * 树深
+ *
  * 返回二叉树的深度（层数）。
  */
 int BiTreeDepth(BiTriTree T){
@@ -217,46 +129,10 @@ int BiTreeDepth(BiTriTree T){
         return (LD >= RD ? LD : RD) + 1;
     }
 }
-```
-
-## 取值
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
-// 返回指向二叉树结点e的指针
-static BiTriTree EPtr(BiTriTree T, TElemType e) {
-    BiTriTree pl, pr;
-
-    if(T == NULL) {
-        return NULL;
-    }
-
-    // 如果找到了目标结点，直接返回其指针
-    if(T->data == e) {
-        return T;
-    }
-
-    // 在左子树中查找e
-    pl = EPtr(T->lchild, e);
-    if(pl != NULL) {
-        return pl;
-    }
-
-    // 在右子树中查找e
-    pr = EPtr(T->rchild, e);
-    if(pr != NULL) {
-        return pr;
-    }
-
-    return NULL;
-}
 
 /*
+ * 取值
+ *
  * 返回二叉树中指定结点的值。
  */
 TElemType Value(BiTriTree T, TElemType e) {
@@ -277,18 +153,10 @@ TElemType Value(BiTriTree T, TElemType e) {
         return p->data;
     }
 }
-```
 
-## 赋值
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
+ * 赋值
+ *
  * 为二叉树指定的结点赋值。
  */
 Status Assign(BiTriTree T, TElemType e, TElemType value) {
@@ -311,18 +179,10 @@ Status Assign(BiTriTree T, TElemType e, TElemType value) {
         return OK;
     }
 }
-```
 
-## 根节点
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
+ * 根
+ *
  * 返回二叉树的根结点。
  */
 TElemType Root(BiTriTree T){
@@ -333,16 +193,10 @@ TElemType Root(BiTriTree T){
 
     return T->data;
 }
-```
 
-## 双亲(父结点)
-
-查找当前结点`p = EPtr(T,e);`
-
-返回其父结点数据`p->parent->data`
-
-```c
 /*
+ * 双亲
+ *
  * 返回二叉树中结点e的双亲结点。
  */
 TElemType Parent(BiTriTree T, TElemType e){
@@ -363,18 +217,10 @@ TElemType Parent(BiTriTree T, TElemType e){
         return p->parent->data;
     }
 }
-```
 
-## 左孩子
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
+ * 左孩子
+ *
  * 返回二叉树中结点e的左孩子结点。
  */
 TElemType LeftChild(BiTriTree T, TElemType e) {
@@ -395,17 +241,7 @@ TElemType LeftChild(BiTriTree T, TElemType e) {
 
     return '\0';
 }
-```
 
-## 右孩子
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
  * 右孩子
  *
@@ -413,32 +249,26 @@ TElemType LeftChild(BiTriTree T, TElemType e) {
  */
 TElemType RightChild(BiTriTree T, TElemType e) {
     BiTriTree p;
-    
+
     // 遇到空树则无需继续计算
     if(BiTreeEmpty(T)) {
         return '\0';
     }
-    
+
     // 获取结点e的指针
     p = EPtr(T, e);
-    
+
     // 如果找到了元素e
     if(p != NULL && p->rchild != NULL) {
         return p->rchild->data;
     }
-    
+
     return '\0';
 }
-```
 
-## 左兄弟
-
-查找当前结点`p = EPtr(T,e);`
-
-返回其父结点左孩子数据`p->parent->lchild->data`
-
-```c
 /*
+ * 左兄弟
+ *
  * 返回二叉树中结点e的左兄弟结点。
  */
 TElemType LeftSibling(BiTriTree T, TElemType e) {
@@ -459,16 +289,10 @@ TElemType LeftSibling(BiTriTree T, TElemType e) {
 
     return '\0';
 }
-```
 
-## 右兄弟
-
-查找当前结点`p = EPtr(T,e);`
-
-返回其父结点右孩子数据`p->parent->rchild->data`
-
-```c
 /*
+ * 右兄弟
+ *
  * 返回二叉树中结点e的右兄弟结点。
  */
 TElemType RightSibling(BiTriTree T, TElemType e) {
@@ -489,37 +313,10 @@ TElemType RightSibling(BiTriTree T, TElemType e) {
 
     return '\0';
 }
-```
-
-## 先序遍历
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
-// 先序遍历的内部实现
-static Status PreTraverse(BiTriTree T, Status(Visit)(TElemType)) {
-    if(T) {
-        if(Visit(T->data)) {
-            if(PreTraverse(T->lchild, Visit)) {
-                if(PreTraverse(T->rchild, Visit)) {
-                    return OK;
-                }
-            }
-        }
-
-        return ERROR;
-
-        // 遇到空树则无需继续计算
-    } else {
-        return OK;
-    }
-}
 
 /*
+ * ████████ 算法6.1 ████████
+ *
  * 先序遍历
  */
 Status PreOrderTraverse(BiTriTree T, Status(Visit)(TElemType)) {
@@ -529,35 +326,6 @@ Status PreOrderTraverse(BiTriTree T, Status(Visit)(TElemType)) {
     printf("\n");
 
     return status;
-}
-```
-
-## 中序遍历
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
-// 中序遍历的内部实现
-static Status InTraverse(BiTriTree T, Status(Visit)(TElemType)) {
-    if(T) {
-        if(InTraverse(T->lchild, Visit)) {
-            if(Visit(T->data)) {
-                if(InTraverse(T->rchild, Visit)) {
-                    return OK;
-                }
-            }
-        }
-
-        return ERROR;
-
-        // 遇到空树则无需继续计算
-    } else {
-        return OK;
-    }
 }
 
 /*
@@ -571,35 +339,6 @@ Status InOrderTraverse(BiTriTree T, Status(Visit)(TElemType)) {
 
     return status;
 }
-```
-
-## 后序遍历
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
-// 后序遍历的内部实现
-static Status PostTraverse(BiTriTree T, Status(Visit)(TElemType)) {
-    if(T) {
-        if(PostTraverse(T->lchild, Visit)) {
-            if(PostTraverse(T->rchild, Visit)) {
-                if(Visit(T->data)) {
-                    return OK;
-                }
-            }
-        }
-
-        return ERROR;
-
-        // 遇到空树则无需继续计算
-    } else {
-        return OK;
-    }
-}
 
 /*
  * 后序遍历
@@ -612,17 +351,7 @@ Status PostOrderTraverse(BiTriTree T, Status(Visit)(TElemType)) {
 
     return status;
 }
-```
 
-## 层序遍历
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
  * 层序遍历
  */
@@ -666,20 +395,10 @@ Status LevelOrderTraverse(BiTriTree T, Status(Visit)(TElemType)) {
 
     return OK;
 }
-```
 
-## 插入
-
-::: tip
-
-与二叉树-二叉链存储结构基本相同
-
-增加了`c->parent = p_ptr`
-
-:::
-
-```c {31,40}
 /*
+ * 插入
+ *
  * 已知c为与T不相交的非空二叉树，且c的右子树为空，
  * 根据LR的取值(0或1)，将c插入为T中结点p的左子树/右子树，
  * 并且，将p结点原有的左子树/右子树嫁接为二叉树c的右子树。
@@ -723,18 +442,10 @@ Status InsertChild(BiTriTree T, TElemType p, int LR, BiTriTree c) {
 
     return OK;
 }
-```
 
-## 删除
-
-::: tip
-
-与二叉树-二叉链存储结构相同
-
-:::
-
-```c
 /*
+ * 删除
+ *
  * 根据LR的取值(0或1)，删除结点p的左子树/右子树。
  */
 Status DeleteChild(BiTriTree T, TElemType p, int LR) {
@@ -764,5 +475,124 @@ Status DeleteChild(BiTriTree T, TElemType p, int LR) {
 
     return OK;
 }
-```
+/*━━━━━━━━━━━━━━━━━━━━━━ 仅限内部使用的函数 ━━━━━━━━━━━━━━━━━━━━━━*/
+
+// 创建二叉树的内部函数
+static void CreateTree(BiTriTree* T,FILE* fp){
+    char ch;
+
+    // 读取当前结点的值
+    if(fp == NULL) {
+        scanf("%c", &ch);
+    } else {
+        ReadData(fp, "%c", &ch);
+    }
+
+    if(ch == '^') {
+        *T = NULL;
+    } else {
+        // 生成根结点
+        *T = (BiTriTree) malloc(sizeof(BiTriTNode));
+        if(!(*T)) {
+            exit(OVERFLOW);
+        }
+        (*T)->data = ch;
+        (*T)->parent = NULL;
+
+        CreateTree(&((*T)->lchild), fp); // 创建左子树
+        if((*T)->lchild != NULL) {
+            (*T)->lchild->parent = *T;
+        }
+
+        CreateTree(&((*T)->rchild), fp); // 创建右子树
+        if((*T)->rchild != NULL) {
+            (*T)->rchild->parent = *T;
+        }
+    }
+}
+
+// 返回指向二叉树结点e的指针
+static BiTriTree EPtr(BiTriTree T, TElemType e) {
+    BiTriTree pl, pr;
+
+    if(T == NULL) {
+        return NULL;
+    }
+
+    // 如果找到了目标结点，直接返回其指针
+    if(T->data == e) {
+        return T;
+    }
+
+    // 在左子树中查找e
+    pl = EPtr(T->lchild, e);
+    if(pl != NULL) {
+        return pl;
+    }
+
+    // 在右子树中查找e
+    pr = EPtr(T->rchild, e);
+    if(pr != NULL) {
+        return pr;
+    }
+
+    return NULL;
+}
+
+// 先序遍历的内部实现
+static Status PreTraverse(BiTriTree T, Status(Visit)(TElemType)) {
+    if(T) {
+        if(Visit(T->data)) {
+            if(PreTraverse(T->lchild, Visit)) {
+                if(PreTraverse(T->rchild, Visit)) {
+                    return OK;
+                }
+            }
+        }
+
+        return ERROR;
+
+        // 遇到空树则无需继续计算
+    } else {
+        return OK;
+    }
+}
+
+// 中序遍历的内部实现
+static Status InTraverse(BiTriTree T, Status(Visit)(TElemType)) {
+    if(T) {
+        if(InTraverse(T->lchild, Visit)) {
+            if(Visit(T->data)) {
+                if(InTraverse(T->rchild, Visit)) {
+                    return OK;
+                }
+            }
+        }
+
+        return ERROR;
+
+        // 遇到空树则无需继续计算
+    } else {
+        return OK;
+    }
+}
+
+// 后序遍历的内部实现
+static Status PostTraverse(BiTriTree T, Status(Visit)(TElemType)) {
+    if(T) {
+        if(PostTraverse(T->lchild, Visit)) {
+            if(PostTraverse(T->rchild, Visit)) {
+                if(Visit(T->data)) {
+                    return OK;
+                }
+            }
+        }
+
+        return ERROR;
+
+        // 遇到空树则无需继续计算
+    } else {
+        return OK;
+    }
+}
 
