@@ -79,9 +79,9 @@ export default {
           // { text: '树-孩子表示法', link: '/tree/0007' },
           // { text: '树-孩子兄弟表示法', link: '/tree/0008' },
           // { text: '集合', link: '/tree/0009' },
-          // { text: '赫夫曼树', link: '/tree/0010' },
-          // { text: '冪集', link: '/tree/0011' },
-          // { text: 'N 皇后问题', link: '/tree/0012' },
+          { text: '赫夫曼树', link: '/tree/0010' },
+          { text: '幂集', link: '/tree/0011' },
+          { text: 'N 皇后问题', link: '/tree/0012' },
         ]
       },
     ],

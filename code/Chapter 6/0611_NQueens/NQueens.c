@@ -1,36 +1,16 @@
----
-outline: deep
----
+/*==============
+ * N皇后问题
+ *
+ * 包含算法: 6.16
+ ===============*/
 
-# N 皇后问题
+#include "NQueens.h"
 
-八皇后问题是以国际象棋为背景的问题：有八个皇后（可以当成八个棋子），如何在 8*8 的棋盘中放置八个皇后，使得任意两个皇后都不在同一条**横线**、**纵线**或者**斜线**上。
-
-![img](./assets/2-1FZ51030001N.png)
-
-四皇后状态树
-
-![image-20231206142759609](./assets/image-20231206142759609.png)
-
-
-
-## 结构定义
-
-```c
-/* 棋盘最大范围N*N，其值必须>=4 */
-#define N 8
-
-/* 棋盘类型定义 */
-typedef int ChessBoard;
 
 /* 全局变量 */
 int order;          // 跟踪每一种解法
-ChessBoard** CB;    // 棋盘
-```
+ChessBoard **CB;    // 棋盘
 
-## 初始化棋盘
-
-```c
 /*
  * 初始化N*N规模的棋盘CB。
  *
@@ -47,14 +27,10 @@ void InitChessBoard(){
         memset(CB[i],0,N * sizeof(ChessBoard));
     }
 }
-```
 
-## 求解N皇后
-
-::: code-group
-
-```c [NQueens.c]
 /*
+ * ████████ 算法6.16 ████████
+ *
  * 在指定大小棋盘上求出N皇后问题的各解。
  */
 void Trial(int i, int n) {
@@ -192,27 +168,3 @@ void ShowChessBoard() {
     }
     printf("+\n");
 }
-```
-
-```c [main.c]
-#include <stdio.h>
-#include "NQueens.h"
-
-int main() {
-    // 设置输出为UTF-8
-    system("chcp 65001");
-
-    // 初始化一个 %2d * %-2d 的空棋盘
-    InitChessBoard();
-
-    // 展示当前棋盘中的皇后布局
-    ShowChessBoard();
-
-    // 计算N皇后问题的各解
-    Trial(1, N);
-
-    return 0;
-}
-```
-
-:::
