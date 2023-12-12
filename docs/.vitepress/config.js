@@ -84,6 +84,15 @@ export default {
           { text: 'N 皇后问题', link: '/tree/0012' },
         ]
       },
+      {
+        text: '图',
+        items: [
+          { text: '图的存储结构-数组表示', link: '/graph/0001' },
+          { text: '图的存储结构-邻接表表示', link: '/graph/0002' },
+          { text: '图的存储结构-十字链表表示', link: '/graph/0003' },
+          { text: '图的存储结构-邻接多重表表示', link: '/graph/0004' },
+        ]
+      },
     ],
 
     socialLinks: [
