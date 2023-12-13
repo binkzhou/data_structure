@@ -26,9 +26,9 @@
 
 
 /* 宏定义 */
-#define MAX_VERTEX_NUM 26  // 最大顶点个数
+#define MAX_VERTEX_NUM 26   // 最大顶点个数
 
-// 图的类型
+
 // 图的类型
 typedef enum {
     DG,     // 0-有向图
