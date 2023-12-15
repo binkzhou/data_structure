@@ -1,74 +1,37 @@
----
-outline: deep
----
+/*====================
+ * 图的十字链表存储表示
+ *
+ * 包含算法: 7.3
+ ====================*/
 
-# 图的十字链表存储表示
+#include "OLGraph.h"
 
-用邻接表存储有向图（网），可以快速计算出某个顶点的出度，但计算入度的效率不高。反之，用逆邻接表存储有向图（网），可以快速计算出某个顶点的入度，但计算出度的效率不高。
+// 录入数据的源文件；fp为null时，说明需要从控制台录入
+static FILE* fp = NULL;
 
-![img](./assets/2-220H4152KC92.gif)
-
-## 结构定义
-
-```c
-/* 宏定义 */
-#define MAX_VERTEX_NUM 26   // 最大顶点个数
-
-
-// 图的类型
-typedef enum {
-    DG,     // 0-有向图
-    DN,     // 1-有向网(带权值)
-    UDG,    // 2-无向图
-    UDN     // 3-无向网(带权值)
-} GraphKind;
-
-// 顶点类型
-typedef char VertexType;
-
-// 边/弧的相关附加信息
-typedef struct {
-    /*
-     * 注：
-     * 教材中给出的结构只考虑了无权图，而没考虑有权图(网)。
-     * 这里为了把“网”的情形也考虑进去，特在附加信息中增加了"权重"属性。
-     */
-    int weight;
-} InfoType;
-
-/* 边/弧结点 */
-typedef struct ArcBox {
-    int tailvex;    // 弧头顶点位置
-    int headvex;    // 弧尾顶点位置
-    struct ArcBox* hlink;  // 指向下一个拥有相同弧头的弧
-    struct ArcBox* tlink;  // 指向下一个拥有相同弧尾的弧
-    InfoType* info;  // 该弧的相关附加信息
-} ArcBox;
-
-// 每个横向链表的头结点
-typedef struct VexNode {
-    VertexType data;    // 顶点
-    ArcBox* firstin;    // 指向该顶点的第一条入弧
-    ArcBox* firstout;   // 指向该顶点的第一条出弧
-} VexNode;
-
-/* 图的十字链表存储表示类型定义 */
-typedef struct {
-    VexNode xlist[MAX_VERTEX_NUM];  // 表头向量
-    int vexnum, arcnum;             // 顶点数和弧数
-    GraphKind kind;                 // 图的类型标志
-} OLGraph;
-
-
-// 边/弧上是否存在附加信息
-extern Boolean IncInfo;
-```
-
-## 创建图/表
-
-```c
 /*
- * 创建图/表
+ * IncInfo指示该图的边上是否存在附加信息。
+ * 如果其值不为0，则表示无附加信息，否则，表示存在附加信息。
+ */
+Boolean IncInfo = FALSE;
+
+// 访问标志数组，记录访问过的顶点
+static Boolean visited[MAX_VERTEX_NUM];
+
+// 函数变量
+static Status (* VisitFunc)(VertexType e);
+
+/*
+ * 创建
+ *
+ *【备注】
+ *
+ * 教材中默认从控制台读取数据。
+ * 这里为了方便测试，避免每次运行都手动输入数据，
+ * 因而允许选择从预设的文件path中读取测试数据。
+ *
+ * 如果需要从控制台读取数据，则path为NULL，或path[kind]为""。
+ * 如果需要从文件中读取数据，则需要在path中填写文件名信息。
  */
 Status CreateGraph(OLGraph* G, char* path[]){
     int readFromConsole;  // 是否从控制台读取数据
@@ -126,11 +89,7 @@ Status CreateGraph(OLGraph* G, char* path[]){
 
     return flag;
 }
-```
 
-## 录入弧的相关附加信息
-
-```c
 /*
  * 录入弧的相关附加信息
  */
@@ -144,12 +103,10 @@ static void Input(OLGraph G, InfoType** info) {
         (*info)->weight = weight;
     }
 }
-```
 
-## 查找
-
-```c
 /*
+ * 查找
+ *
  * 返回顶点u在图/网中的位置
  */
 int LocateVex(OLGraph G, VertexType u) {
@@ -163,25 +120,7 @@ int LocateVex(OLGraph G, VertexType u) {
 
     return -1;
 }
-```
 
-## 构造一个边/弧结点(仅限内部使用)
-
-![img](./assets/2-220H4152KC92.gif)
-
-![img](./assets/130UU537-2.gif)
-
-`tailvex`数据域：存储弧尾一端在**顶点在顺序表**中的位置下标；[`V1`,`V2`,`V3`,`V4`]中的下标
-
-`headvex` 数据域：存储弧头一端在**顶点在顺序表**中的位置下标；[`V1`,`V2`,`V3`,`V4`]中的下标
-
-`hlink`指针域：指向下一个以当前顶点作为**弧头**的弧；
-
-`tlink` 指针域：指向下一个以当前顶点作为**弧尾**的弧；
-
-`info` 指针：存储弧的其它信息，例如有向网中弧的权值。如果不需要存储其它信息，可以省略。
-
-```c
 /*
  * 构造一个边/弧结点(仅限内部使用)
  */
@@ -204,11 +143,7 @@ static ArcBox* newArcBoxPtr(int tailvex, int headvex, ArcBox* hlink, ArcBox* tli
 
     return p;
 }
-```
 
-## 插入边/弧
-
-```c
 /*
  * 插入边/弧<v, w>
  *
@@ -320,12 +255,10 @@ Status InsertArc(OLGraph* G, VertexType v, VertexType w, ...) {
 
     return OK;
 }
-```
 
-## 构造有向图
-
-```c
 /*
+ * ████████ 算法7.3 ████████
+ *
  * 构造有向图
  *
  * 注：
@@ -378,11 +311,8 @@ static Status CreateDG(OLGraph* G) {
     // 从文件中读取数据时，最后其实应当判断一下是否读到了足够的信息
     return OK;
 }
-```
 
-## 构造有向网
 
-```c
 /*
  * 构造有向网
  */
@@ -428,11 +358,7 @@ static Status CreateDN(OLGraph* G) {
     // 从文件中读取数据时，最后其实应当判断一下是否读到了足够的信息
     return OK;
 }
-```
 
-## 构造无向图
-
-```c
 /*
  * 构造无向图
  */
@@ -477,11 +403,7 @@ static Status CreateUDG(OLGraph* G) {
     // 从文件中读取数据时，最后其实应当判断一下是否读到了足够的信息
     return OK;
 }
-```
 
-## 构造无向网
-
-```c
 /*
  * 构造无向网
  */
@@ -527,12 +449,10 @@ static Status CreateUDN(OLGraph* G) {
     // 从文件中读取数据时，最后其实应当判断一下是否读到了足够的信息
     return OK;
 }
-```
 
-## 销毁
-
-```c
 /*
+ * 销毁
+ *
  * 邻接表存储的图需要释放内存。
  */
 Status DestroyGraph(OLGraph* G) {
@@ -558,11 +478,7 @@ Status DestroyGraph(OLGraph* G) {
 
     return OK;
 }
-```
 
-## 取值
-
-```c
 /*
  * 取值
  *
@@ -575,11 +491,7 @@ VertexType GetVex(OLGraph G, int v) {
 
     return G.xlist[v].data;
 }
-```
 
-## 赋值
-
-```c
 /*
  * 赋值
  *
@@ -601,11 +513,7 @@ Status PutVex(OLGraph* G, VertexType v, VertexType value) {
 
     return OK;
 }
-```
 
-## 首个邻接点
-
-```c
 /*
  * 首个邻接点
  *
@@ -628,11 +536,7 @@ int FirstAdjVex(OLGraph G, VertexType v) {
         return r->headvex;
     }
 }
-```
 
-## 下一个邻接点
-
-```c
 /*
  * 下一个邻接点
  *
@@ -676,11 +580,7 @@ int NextAdjVex(OLGraph G, VertexType v, VertexType w) {
 
     return -1;
 }
-```
 
-## 插入顶点
-
-```c
 /*
  * 插入顶点
  *
@@ -708,11 +608,7 @@ Status InsertVex(OLGraph* G, VertexType v) {
 
     return OK;
 }
-```
 
-## 删除顶点
-
-```c
 /*
  * 删除顶点
  *
@@ -838,11 +734,7 @@ Status DeleteVex(OLGraph* G, VertexType v) {
 
     return OK;
 }
-```
 
-## 删除边/弧
-
-```c
 /*
  * 删除边/弧<v, w>
  */
@@ -913,11 +805,7 @@ Status DeleteArc(OLGraph* G, VertexType v, VertexType w) {
 
     return OK;
 }
-```
 
-## 深度优先遍历
-
-```c
 /*
  * 深度优先遍历(此处借助递归实现)
  */
@@ -960,11 +848,7 @@ static void DFS(OLGraph G, int v) {
         }
     }
 }
-```
 
-## 广度优先遍历
-
-```c
 /*
  * 广度优先遍历(此处借助队列实现)
  */
@@ -1011,5 +895,55 @@ void BFSTraverse(OLGraph G, Status(Visit)(VertexType)) {
         }
     }
 }
-```
 
+/*
+ * 以图形化形式输出当前结构
+ */
+void PrintGraph(OLGraph G) {
+    int i, head;
+    ArcBox* p;
+
+    if(G.vexnum == 0) {
+        printf("空图，无需打印！\n");
+        return;
+    }
+
+    printf("当前图/网包含 %2d 个顶点， %2d 条边/弧...\n", G.vexnum, G.arcnum);
+
+    for(i = 0; i < G.vexnum; i++) {
+        printf("%c ===> ", G.xlist[i].data);
+
+        head = 0;
+        p = G.xlist[i].firstout;
+
+        while(p != NULL) {
+            if(head < p->headvex) {
+                if(IncInfo == 0) {
+                    printf("      ");
+
+                    // 对于网，会从其附加信息中获取到权值
+                } else {
+                    printf("          ");
+                }
+            } else {
+                if(IncInfo == 0) {
+                    printf("<%c, %c>", G.xlist[p->tailvex].data, G.xlist[p->headvex].data);
+
+                    // 对于网，会从其附加信息中获取到权值
+                } else {
+                    printf("<%c, %c, %2d>", G.xlist[p->tailvex].data, G.xlist[p->headvex].data, p->info->weight);
+                }
+
+                p = p->tlink;
+            }
+
+            head++;
+
+            if(p != NULL) {
+                printf("  ");
+            }
+        }
+
+        printf("\n");
+    }
+}

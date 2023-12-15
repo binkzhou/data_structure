@@ -1,81 +1,36 @@
----
-outline: deep
----
+/*=====================
+ * 图的邻接多重表存储表示
+ ======================*/
 
-# 图的邻接多重表存储表示
+#include "AMLGraph.h"
 
-邻接多重表（Adjacency Multilist）是一种专门存储无向图（网）的结构。
+// 录入数据的源文件；fp为null时，说明需要从控制台录入
+static FILE* fp = NULL;
 
-邻接多重表存储无向图的方式，可以看作是邻接表和十字链表的结合体，具体来讲就是：将图中的所有顶点存储到顺序表（也可以用链表）中，同时为每个顶点配备一个链表，链表的各个结点中存储的都是和当前顶点有直接关联的边。
+/*
+ * IncInfo指示该图的边上是否存在附加信息。
+ * 如果其值不为0，则表示无附加信息，否则，表示存在附加信息。
+ */
+Boolean IncInfo = FALSE;
 
-![img](./assets/2-220H41529315O.gif)
+// 访问标志数组，记录访问过的顶点
+static Boolean visited[MAX_VERTEX_NUM];
 
-## 结构定义
-
-```c
-/* 宏定义 */
-#define MAX_VERTEX_NUM 26                       // 最大顶点个数
-
-// 图的类型
-typedef enum {
-    DG,     // 0-有向图；此处不支持
-    DN,     // 1-有向网(带权值)；此处不支持
-    UDG,    // 2-无向图
-    UDN     // 3-无向网(带权值)
-} GraphKind;
+// 函数变量
+static Status (* VisitFunc)(VertexType e);
 
 
-/* 无向图（邻接多重表）类型定义 */
-typedef enum {
-    unvisit, visit
-} VisitIf;
-
-// 顶点类型
-typedef char VertexType;
-
-// 边的相关附加信息
-typedef struct {
-    /*
-     * 注：
-     * 教材中给出的结构只考虑了无权图，而没考虑有权图(网)。
-     * 这里为了把“网”的情形也考虑进去，特在附加信息中增加了"权重"属性。
-     */
-    int weight;
-} InfoType;
-
-/* 边结点 */
-typedef struct EBox {
-    VisitIf mark;       // 访问标记
-    int ivex;           // 该边依附的两个顶点的位置
-    int jvex;           // 该边依附的两个顶点的位置
-    struct EBox* ilink; // 分别指向依附这两个顶点的下一条边
-    struct EBox* jlink; // 分别指向依附这两个顶点的下一条边
-    InfoType* info;
-} EBox;
-
-// 每个链表的头结点
-typedef struct VexBox {
-    VertexType data;    // 顶点信息
-    EBox* firstedge;    // 指向第一条依附该顶点的边的指针
-} VexBox;
-
-/* 图的邻接多重表存储表示类型定义 */
-typedef struct {
-    VexBox adjmulist[MAX_VERTEX_NUM];   // 表头向量
-    int vexnum, edgenum;                // 图/网的顶点数和边数
-    GraphKind kind;                     // 图的类型标志
-} AMLGraph;
-
-
-// 边/弧上是否存在附加信息
-extern Boolean IncInfo;
-```
-
-## 创建图/表
-
-```c
 /*
  * 创建
+ *
+ *【备注】
+ *
+ * 教材中默认从控制台读取数据。
+ * 这里为了方便测试，避免每次运行都手动输入数据，
+ * 因而允许选择从预设的文件path中读取测试数据。
+ *
+ * 如果需要从控制台读取数据，则path为NULL，或path[kind]为""。
+ * 如果需要从文件中读取数据，则需要在path中填写文件名信息。
  */
 Status CreateGraph(AMLGraph* G, char* path[]) {
     int readFromConsole;    // 是否从控制台读取数据
@@ -127,11 +82,7 @@ Status CreateGraph(AMLGraph* G, char* path[]) {
 
     return flag;
 }
-```
 
-## 录入边的相关附加信息
-
-```c
 /*
  * 录入边的相关附加信息
  */
@@ -151,11 +102,7 @@ static void Input(AMLGraph G, InfoType** info) {
         (*info)->weight = weight;
     }
 }
-```
 
-## 查找
-
-```c
 /*
  * 查找
  *
@@ -172,11 +119,7 @@ int LocateVex(AMLGraph G, VertexType u) {
 
     return -1;
 }
-```
 
-## 构造一个边结点
-
-```c
 /*
  * 构造一个边结点(仅限内部使用)
  */
@@ -198,11 +141,7 @@ static EBox* newEBoxPtr(VisitIf mark, int ivex, int jvex, EBox* ilink, EBox* jli
 
     return p;
 }
-```
 
-## 插入边
-
-```c
 /*
  * 插入边<v, w>
  *
@@ -316,11 +255,7 @@ Status InsertArc(AMLGraph* G, VertexType v, VertexType w, ...) {
 
     return OK;
 }
-```
 
-## 构造无向图
-
-```c
 /*
  * 构造无向图
  */
@@ -364,11 +299,7 @@ static Status CreateUDG(AMLGraph* G) {
     // 从文件中读取数据时，最后其实应当判断一下是否读到了足够的信息
     return OK;
 }
-```
 
-## 构造无向网
-
-```c
 /*
  * 构造无向网
  */
@@ -414,11 +345,7 @@ static Status CreateUDN(AMLGraph* G) {
     // 从文件中读取数据时，最后其实应当判断一下是否读到了足够的信息
     return OK;
 }
-```
 
-## 销毁
-
-```c
 /*
  * 销毁
  *
@@ -505,11 +432,7 @@ Status DestroyGraph(AMLGraph* G) {
 
     return OK;
 }
-```
 
-## 取值
-
-```c
 /*
  * 取值
  *
@@ -522,11 +445,7 @@ VertexType GetVex(AMLGraph G, int v) {
 
     return G.adjmulist[v].data;
 }
-```
 
-## 赋值
-
-```c
 /*
  * 赋值
  *
@@ -548,11 +467,7 @@ Status PutVex(AMLGraph* G, VertexType v, VertexType value) {
 
     return OK;
 }
-```
 
-## 首个邻接点
-
-```c
 /*
  * 首个邻接点
  *
@@ -581,11 +496,7 @@ int FirstAdjVex(AMLGraph G, VertexType v) {
         }
     }
 }
-```
 
-## 下一个邻接点
-
-```c
 /*
  * 下一个邻接点
  *
@@ -646,11 +557,7 @@ int NextAdjVex(AMLGraph G, VertexType v, VertexType w) {
         return -1;  // 不会至此
     }
 }
-```
 
-## 插入顶点
-
-```c
 /*
  * 插入顶点
  *
@@ -677,11 +584,7 @@ Status InsertVex(AMLGraph* G, VertexType v) {
 
     return OK;
 }
-```
 
-## 删除顶点
-
-```c
 /*
  * 删除顶点
  *
@@ -785,11 +688,8 @@ Status DeleteVex(AMLGraph* G, VertexType v) {
 
     return OK;
 }
-```
 
-## 删除边
 
-```c
 /*
  * 删除边<v, w>
  */
@@ -901,11 +801,7 @@ Status DeleteArc(AMLGraph* G, VertexType v, VertexType w) {
 
     return OK;
 }
-```
 
-## 深度优先遍历
-
-```c
 /*
  * 深度优先遍历(此处借助递归实现)
  */
@@ -948,11 +844,7 @@ static void DFS(AMLGraph G, int v) {
         }
     }
 }
-```
 
-## 广度优先遍历
-
-```c
 /*
  * 广度优先遍历(此处借助队列实现)
  */
@@ -999,5 +891,65 @@ void BFSTraverse(AMLGraph G, Status(Visit)(VertexType)) {
         }
     }
 }
-```
 
+/*
+ * 以图形化形式输出当前结构
+ */
+void PrintGraph(AMLGraph G) {
+    int i, cur, pos;
+    EBox* p;
+
+    if(G.vexnum == 0) {
+        printf("空图，无需打印！\n");
+        return;
+    }
+
+    printf("当前图/网包含 %2d 个顶点， %2d 条边...\n", G.vexnum, G.edgenum);
+
+    for(i = 0; i < G.vexnum; i++) {
+        printf("%c ===> ", G.adjmulist[i].data);
+
+        cur = 0;
+        p = G.adjmulist[i].firstedge;
+
+        while(p != NULL) {
+            if(p->ivex == i) {
+                pos = p->jvex;
+            } else {
+                pos = p->ivex;
+            }
+
+            if(cur < pos) {
+                if(IncInfo == 0) {
+                    printf(" ");
+
+                    // 对于网，会从其附加信息中获取到权值
+                } else {
+                    printf("     ");
+                }
+            } else {
+                if(IncInfo == 0) {
+                    printf("%c", G.adjmulist[pos].data);
+
+                    // 对于网，会从其附加信息中获取到权值
+                } else {
+                    printf("%c[%2d]", G.adjmulist[pos].data, p->info->weight);
+                }
+
+                if(p->ivex == i) {
+                    p = p->ilink;
+                } else {
+                    p = p->jlink;
+                }
+            }
+
+            cur++;
+
+            if(p != NULL) {
+                printf("  ");
+            }
+        }
+
+        printf("\n");
+    }
+}

@@ -91,6 +91,11 @@ export default {
           { text: '图的存储结构-邻接表表示', link: '/graph/0002' },
           { text: '图的存储结构-十字链表表示', link: '/graph/0003' },
           { text: '图的存储结构-邻接多重表表示', link: '/graph/0004' },
+          { text: '无向图的生成树', link: '/graph/0005' },
+          { text: '无向网的最小生成树', link: '/graph/0006' },
+          { text: '拓扑排序-AOV-网', link: '/graph/0007' },
+          { text: '拓扑排序-AOE-网', link: '/graph/0008' },
+          { text: '最短路径算法', link: '/graph/0009' },
         ]
       },
     ],
